@@ -26,7 +26,7 @@
   The library works on Arduino UNO/2009 - Arduino Mega.
   Please with Arduino UNO/2009 works with SoftwareSerial library modified with baud rate 57.600.
   Use this begin type:
-		begin(57600, int rx, int tx);
+        begin(57600, int rx, int tx);
  
   For Arduino Mega, please use baud rate 115.200
 
@@ -48,39 +48,39 @@
 #endif
 
 
-#define DATA_SIZE	 30		// buffer for input data
-#define DATA_MOVE  	 50		// max 10 servos <---- change this for more servos!
-#define TIME_OUT     5   	//timeout serial communication
+#define DATA_SIZE    30     // buffer for input data
+#define DATA_MOVE    50     // max 10 servos <---- change this for more servos!
+#define TIME_OUT     5      //timeout serial communication
 
 // SERVO HERKULEX COMMAND - See Manual p40
-#define HEEPWRITE    0x01 	//Rom write
-#define HEEPREAD     0x02 	//Rom read
-#define HRAMWRITE	 0x03 	//Ram write
-#define HRAMREAD	 0x04 	//Ram read
-#define HIJOG		 0x05 	//Write n servo with different timing
-#define HSJOG		 0x06 	//Write n servo with same time
-#define HSTAT	 	 0x07 	//Read error
-#define HROLLBACK	 0x08 	//Back to factory value
-#define HREBOOT	 	 0x09 	//Reboot
+#define HEEPWRITE    0x01   //Rom write
+#define HEEPREAD     0x02   //Rom read
+#define HRAMWRITE    0x03   //Ram write
+#define HRAMREAD     0x04   //Ram read
+#define HIJOG        0x05   //Write n servo with different timing
+#define HSJOG        0x06   //Write n servo with same time
+#define HSTAT        0x07   //Read error
+#define HROLLBACK    0x08   //Back to factory value
+#define HREBOOT      0x09   //Reboot
 
 // HERKULEX LED - See Manual p29
-static int LED_GREEN =	 0x01;
+static int LED_GREEN =   0x01;
 static int LED_BLUE  =   0x02;
 static int LED_CYAN  =   0x03;
-static int LED_RED   = 	 0x04;
-static int LED_GREEN2= 	 0x05;
+static int LED_RED   =   0x04;
+static int LED_GREEN2=   0x05;
 static int LED_PINK  =   0x06;
 static int LED_WHITE =   0x07;
 
 // HERKULEX STATUS ERROR - See Manual p39
-static byte H_STATUS_OK					= 0x00;
-static byte H_ERROR_INPUT_VOLTAGE 		= 0x01;
-static byte H_ERROR_POS_LIMIT			= 0x02;
-static byte H_ERROR_TEMPERATURE_LIMIT	= 0x04;
-static byte H_ERROR_INVALID_PKT			= 0x08;
-static byte H_ERROR_OVERLOAD			= 0x10;
-static byte H_ERROR_DRIVER_FAULT  		= 0x20;
-static byte H_ERROR_EEPREG_DISTORT		= 0x40;
+static byte H_STATUS_OK                 = 0x00;
+static byte H_ERROR_INPUT_VOLTAGE       = 0x01;
+static byte H_ERROR_POS_LIMIT           = 0x02;
+static byte H_ERROR_TEMPERATURE_LIMIT   = 0x04;
+static byte H_ERROR_INVALID_PKT         = 0x08;
+static byte H_ERROR_OVERLOAD            = 0x10;
+static byte H_ERROR_DRIVER_FAULT        = 0x20;
+static byte H_ERROR_EEPREG_DISTORT      = 0x40;
 
 // HERKULEX Broadcast Servo ID
 static byte BROADCAST_ID = 0xFE;
@@ -115,14 +115,14 @@ public:
   int   getPosition(int servoID);
   float getAngle(int servoID);
   int   getSpeed(int servoID);
-		
+        
   void  reboot(int servoID);
   void  setLed(int servoID, int valueLed);
  
   void  writeRegistryRAM(int servoID, int address, int writeByte);
   void  writeRegistryEEP(int servoID, int address, int writeByte);
 
-  
+
 // private area  
 private:
   void sendData(byte* buffer, int lenght);
