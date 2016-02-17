@@ -37,6 +37,7 @@
  *****************************************************************************  
 */
 #include "Herkulex.h"
+// NOTE: This is a locally patched version for custom baud rate support
 #include "SoftwareSerial.h"
 
 
