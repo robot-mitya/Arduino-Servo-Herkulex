@@ -50,58 +50,11 @@
 extern SoftwareSerial SwSerial(0, 1);
 
 // Herkulex begin with Arduino Uno
-void HerkulexClass::begin(long baud, int rx, int tx)
+void HerkulexClass::begin(Stream *port_)
 {
-    SwSerial.setRX(rx);
-    SwSerial.setTX(tx);
-    SwSerial.begin(baud);
-    port = SSerial;
+    port = port_;
 }
 
-#if defined (__AVR_ATmega1280__) || defined (__AVR_ATmega128__) || defined (__AVR_ATmega2560__)
-// Herkulex begin with Arduino Mega - Serial 1
-void HerkulexClass::beginSerial1(long baud)
-{
-    Serial1.begin(baud);
-    port = HSerial1;
-}
-
-// Herkulex begin with Arduino Mega - Serial 2
-void HerkulexClass::beginSerial2(long baud)
-{
-    Serial2.begin(baud);
-    port=HSerial2;
-}
-
-// Herkulex begin with Arduino Mega - Serial 3
-void HerkulexClass::beginSerial3(long baud)
-{
-    Serial3.begin(baud);
-    port = HSerial3;
-}
-#endif
-
-// Herkulex end
-void HerkulexClass::end()
-{
-    switch (port)
-    {
-    case SSerial:
-        SwSerial.end();
-        break;
-    #if defined (__AVR_ATmega1280__) || defined (__AVR_ATmega128__) || defined (__AVR_ATmega2560__)
-    case HSerial1:
-        Serial1.end();
-        break;
-    case HSerial2:
-        Serial2.end();
-        break;
-    case HSerial3:
-        Serial3.end();
-        break;
-    #endif
-    }
-}
 
 // initialize servos
 void HerkulexClass::initialize()
@@ -872,27 +825,9 @@ void HerkulexClass::addData(int GoalLSB, int GoalMSB, int set, int servoID)
 void HerkulexClass::sendData(byte* buffer, int lenght)
 {
         clearBuffer();      //clear the serialport buffer - try to do it!
-        switch (port)
-        {
-            case SSerial:
-                        SwSerial.write(buffer, lenght);
-                        delay(1);
-                        break;
-            #if defined (__AVR_ATmega1280__) || defined (__AVR_ATmega128__) || defined (__AVR_ATmega2560__)
-            case HSerial1:
-                Serial1.write(buffer, lenght);
-                delay(1);
-                break;
-            case HSerial2:
-                Serial2.write(buffer, lenght);
-                delay(1);
-                break;
-            case HSerial3:
-                Serial3.write(buffer, lenght);
-                delay(1);
-                break;
-            #endif
-        }
+        port->write(buffer, lenght);
+        // 2016-02-17 rambo: PONDER: why the delay, even with hwserial ?
+        delay(1);
 }
 
 // * Receiving the lenght of bytes from Serial port
@@ -901,125 +836,41 @@ void HerkulexClass::readData(int size)
     int i = 0;
     int beginsave=0;
     int Time_Counter=0;
-    switch (port)
-    {
-    case SSerial:
 
-        while((SwSerial.available() < size) & (Time_Counter < TIME_OUT)){
-                Time_Counter++;
-                delayMicroseconds(1000);  //wait 1 millisecond for 10 times
-        }
-            
-        while (SwSerial.available() > 0){
-            byte inchar = (byte)SwSerial.read();
-            if ( (inchar == 0xFF) & ((byte)SwSerial.peek() == 0xFF) ){
-                    beginsave=1; 
-                    i=0;                 // if found new header, begin again
-            }
-            if (beginsave==1 && i<size) {
-                   dataEx[i] = inchar;
-                   i++;
-            }
-        }
-        SwSerial.flush();
-        break;
-
-    #if defined (__AVR_ATmega1280__) || defined (__AVR_ATmega128__) || defined (__AVR_ATmega2560__)
-    case HSerial1:
-        while((Serial1.available() < size) & (Time_Counter < TIME_OUT)){
-                Time_Counter++;
-                delayMicroseconds(1000);
-        }       
-        while (Serial1.available() > 0){
-            byte inchar = (byte)Serial1.read();
-            //printHexByte(inchar);
-            if ( (inchar == 0xFF) & ((byte)Serial1.peek() == 0xFF) ){
-                        beginsave=1;
-                        i=0;                        
-             }
-            if (beginsave==1 && i<size) {
-                       dataEx[i] = inchar;
-                       i++;
-            }
-        }
-        break;
-
-    case HSerial2:
-        while((Serial2.available() < size) & (Time_Counter < TIME_OUT)){
-                Time_Counter++;
-                delayMicroseconds(1000);
-        }
-            
-        while (Serial2.available() > 0){
-            byte inchar = (byte)Serial2.read();
-            if ( (inchar == 0xFF) & ((byte)Serial2.peek() == 0xFF) ){
-                    beginsave=1;
-                    i=0;                    
-            }
-            if (beginsave==1 && i<size) {
-                   dataEx[i] = inchar;
-                   i++;
-            }
-        }
-        break;
-
-    case HSerial3:
-        while((Serial3.available() < size) & (Time_Counter < TIME_OUT)){
+    while((port->available() < size) & (Time_Counter < TIME_OUT)){
             Time_Counter++;
-            delayMicroseconds(1000);
-        }
-        
-        while (Serial3.available() > 0){
-            byte inchar = (byte)Serial3.read();
-            if ( (inchar == 0xFF) & ((byte)Serial3.peek() == 0xFF) ){
-                    beginsave=1;
-                    i=0; 
-            }
-            if (beginsave==1 && i<size) {
-                   dataEx[i] = inchar;
-                   i++;
-            }
-        }
-        break;
-    #endif
+            delayMicroseconds(1000);  //wait 1 millisecond for 10 times
     }
+        
+    while (port->available() > 0){
+        byte inchar = (byte)port->read();
+        if ( (inchar == 0xFF) & ((byte)port->peek() == 0xFF) ){
+                beginsave=1; 
+                i=0;                 // if found new header, begin again
+        }
+        if (beginsave==1 && i<size) {
+               dataEx[i] = inchar;
+               i++;
+        }
+    }
+    // 2016-02-17 rambo: PONDER: Do we really want to flush the port ? SwSerial code did, hardware serial did not...
+    //port->flush();
 }
 
 //clear buffer in the serial port - better - try to do this
 void HerkulexClass::clearBuffer()
 {
-  switch (port)
-    {
-    case SSerial:
-                SwSerial.flush();
-                delay(1);
-                break;
-    #if defined (__AVR_ATmega1280__) || defined (__AVR_ATmega128__) || defined (__AVR_ATmega2560__)
-    case HSerial1:
+    port->flush();
+    delay(1);
+    /**
+     * LEaving this WTF as reminder in case I run into some unexplainable bug in hwserial flush
+
                 Serial1.flush();
                 while (Serial1.available()){
                 Serial1.read();
                 delayMicroseconds(200);
                 }
-
-        break;
-    case HSerial2:
-                Serial2.flush();
-                while (Serial2.available()){
-                Serial2.read();
-                delayMicroseconds(200);
-                }
-        break;
-    case HSerial3:
-                Serial3.flush();
-                while (Serial3.available()){
-                    Serial3.read();
-                    delayMicroseconds(200);
-                }
-
-        break;
-    #endif
-    }
+     */
 }
 
 void HerkulexClass::printHexByte(byte x)

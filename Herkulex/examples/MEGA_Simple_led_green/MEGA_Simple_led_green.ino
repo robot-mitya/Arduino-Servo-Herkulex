@@ -1,12 +1,13 @@
 #include <Herkulex.h>
+int n=0xfd; //motor ID - verify your ID (0xFD is default) !!!!
 
 void setup()  
 {
-  int n=1; //set the motor ID
   delay(2000);  //a delay to have time for serial monitor opening
   Serial.begin(115200);    // Open serial communications
   Serial.println("Begin");
-  Herkulex.beginSerial1(115200); //open serial port 1 
+  Serial1.begin(115200); //open serial port 1
+  Herkulex.begin(&Serial1); // And pass a pointer to it to the API class
   Herkulex.reboot(n); //reboot 
   delay(500); 
   Herkulex.initialize(); //initialize motors
