@@ -1,3 +1,4 @@
 # Arduino-Servo-Herkulex
 
-My fork of Robottinis library with improvements.
+Another fork of Robottinis library.
+

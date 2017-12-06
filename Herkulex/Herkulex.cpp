@@ -37,7 +37,8 @@
  *****************************************************************************  
 */
 #include "Herkulex.h"
-#include "SoftwareSerial.h"
+#include <SoftwareSerial.h>
+
 
 
 // Macro for the Serial port selection
@@ -46,13 +47,14 @@
 #define HSerial3     3   	// Write in Serial 3 port Arduino Mega - Pin 15(rx) - 14 (tx)
 #define SSerial      4   	// Write in SoftSerial Arduino with 328p or Mega
  
-extern SoftwareSerial SwSerial(0, 1);
+//extern SoftwareSerial SwSerial(0, 1);
+extern SoftwareSerial SwSerial(10, 11);
 
 // Herkulex begin with Arduino Uno
 void HerkulexClass::begin(long baud, int rx, int tx)
 {
-	SwSerial.setRX(rx);
-	SwSerial.setTX(tx);
+//	SwSerial.setRX(rx);
+//	SwSerial.setTX(tx);
 	SwSerial.begin(baud);
 	port = SSerial;
 }
@@ -406,7 +408,7 @@ void HerkulexClass::moveSpeedAll(int servoID, int Goal, int iLed)
 	  int GoalSpeedSign;
 	  if (Goal < 0) {
 		GoalSpeedSign = (-1)* Goal ;
-		GoalSpeedSign |= 0x4000;  //bit n°14 
+		GoalSpeedSign |= 0x4000;  //bit nï¿½14 
 	  } 
 	  else {
 		GoalSpeedSign = Goal;
@@ -500,7 +502,6 @@ void HerkulexClass::actionAll(int pTime)
     delay(1);
 	readData(13);
 
-        	
 	pSize = dataEx[2];           // 3.Packet size 7-58
 	pID   = dataEx[3];           // 4. Servo ID
 	cmd   = dataEx[4];           // 5. CMD
@@ -641,7 +642,7 @@ void HerkulexClass::moveSpeedOne(int servoID, int Goal, int pTime, int iLed)
   int GoalSpeedSign;
   if (Goal < 0) {
     GoalSpeedSign = (-1)* Goal ;
-    GoalSpeedSign |= 0x4000;  //bit n°14 
+    GoalSpeedSign |= 0x4000;  //bit nï¿½14 
   } 
   else {
     GoalSpeedSign = Goal;
