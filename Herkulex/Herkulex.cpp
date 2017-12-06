@@ -501,7 +501,11 @@ void HerkulexClass::actionAll(int pTime)
 
     delay(1);
 	readData(13);
-
+    
+    // FIX of HerkuleX firmware (v.090) bug. This byte should be 13.
+    // Due to the bug sometimes it is filled with garbage.
+    dataEx[2] = 13;
+    
 	pSize = dataEx[2];           // 3.Packet size 7-58
 	pID   = dataEx[3];           // 4. Servo ID
 	cmd   = dataEx[4];           // 5. CMD
